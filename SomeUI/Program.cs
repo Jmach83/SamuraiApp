@@ -36,7 +36,15 @@ namespace SomeUI
             //EargerLoadSamuraiWithQuotes();
             //ProjectSomeProperties();
             //var dynamicList = ProjectDynamic();
-            ProjectsWithQoutes();
+            //ProjectsWithQoutes();
+            FilteringWithRelatedData();
+        }
+
+        private static void FilteringWithRelatedData()
+        {
+            var samurais = _context.Samurais
+                .Where(s => s.Qoutes.Any(q => q.Text.Contains("Happy")))
+                .ToList();
         }
 
         private static void ProjectsWithQoutes()
