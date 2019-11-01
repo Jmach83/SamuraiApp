@@ -32,7 +32,17 @@ namespace SomeUI
             //InsertNewPkFkGraph();
             //InsertNewPkFkGraphMultiplyChildren();
             //AddChildToExistingObjectWhileTracked();
-            AddChildToExistingObjectWhileNotTracked(1);
+            //AddChildToExistingObjectWhileNotTracked(1);
+            EargerLoadSamuraiWithQuotes();
+        }
+
+        private static void EargerLoadSamuraiWithQuotes()
+        {
+            //List<Samurai> samuraiWithQoutes = _context.Samurais.Include(s => s.Qoutes).ToList();
+            Samurai samuraiWithQoutes = _context.Samurais.Where(s => s.Name.Contains("Julie"))
+                                                            .Include(s => s.Qoutes)
+                                                            .Include(s => s.SecretIdentity)
+                                                            .FirstOrDefault();
         }
 
         private static void AddChildToExistingObjectWhileNotTracked(int samuraiId)
