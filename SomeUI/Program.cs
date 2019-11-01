@@ -33,7 +33,53 @@ namespace SomeUI
             //InsertNewPkFkGraphMultiplyChildren();
             //AddChildToExistingObjectWhileTracked();
             //AddChildToExistingObjectWhileNotTracked(1);
-            EargerLoadSamuraiWithQuotes();
+            //EargerLoadSamuraiWithQuotes();
+            //ProjectSomeProperties();
+            //var dynamicList = ProjectDynamic();
+            ProjectsWithQoutes();
+        }
+
+        private static void ProjectsWithQoutes()
+        {
+            //var somePropertiesWithQoutes = _context.Samurais
+            //    .Select(s => new { s.Id, s.Name, s.Qoutes.Count })
+            //    .ToList();
+
+            //var somePropertiesWithSomeQoutes = _context.Samurais
+            //    .Select(s => new { s.Id, s.Name, HappyQoutes = s.Qoutes.Where(q => q.Text.Contains("Happy")) })
+            //    .ToList();
+
+            ////EF Core projections don't connect graphs (Issue) - (Samurai -> qoutes -> count )
+            //var samuraisWithHappyQuotes = _context.Samurais
+            //    .Select(s => new { Samurai = s, Quotes = s.Qoutes.Where(q => q.Text.Contains("Happy")).ToList() }).ToList();
+
+            var samurais = _context.Samurais.ToList();
+            var happyQoutes = _context.Qoutes.Where(q => q.Text.Contains("Happy")).ToList();
+                                
+        }
+
+        private static object ProjectDynamic()
+        {
+            var someProperties = _context.Samurais.Select(s => new { s.Id, s.Name }).ToList();
+            return someProperties.ToList<dynamic>();
+        }
+
+        private static void ProjectSomeProperties()
+        {
+            var someProperties = _context.Samurais.Select(s => new {  s.Id, s.Name }).ToList();
+            var idsAndNames = _context.Samurais.Select(s => new IdAndNames(s.Id, s.Name)).ToList();
+        }
+
+        internal class IdAndNames
+        {
+            private int id;
+            private string name;
+
+            public IdAndNames(int id, string name)
+            {
+                this.id = id;
+                this.name = name;
+            }
         }
 
         private static void EargerLoadSamuraiWithQuotes()
@@ -253,4 +299,6 @@ namespace SomeUI
             }
         }
     }
+
+
 }
