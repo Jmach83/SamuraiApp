@@ -37,7 +37,30 @@ namespace SomeUI
             //ProjectSomeProperties();
             //var dynamicList = ProjectDynamic();
             //ProjectsWithQoutes();
-            FilteringWithRelatedData();
+            //FilteringWithRelatedData();
+            //ModifyingRelatedDataWhenTracked();
+            ModifyingRelatedDataWhenNotTracked();
+        }
+
+        private static void ModifyingRelatedDataWhenNotTracked()
+        {
+            var samurai = _context.Samurais.Include(s => s.Qoutes).FirstOrDefault();
+            var qoute = samurai.Qoutes[0];
+            qoute.Text += " Did you hear that?";
+            using(var newContext = new SamuraiContext())
+            {
+                //newContext.Qoutes.Update(qoute);
+                newContext.Entry(qoute).State = EntityState.Modified; //only update the quote and not whole samurai (whole graph)
+                newContext.SaveChanges();
+            }
+        }
+
+        private static void ModifyingRelatedDataWhenTracked()
+        {
+            var samurai = _context.Samurais.Include(s => s.Qoutes).FirstOrDefault();
+            samurai.Qoutes[0].Text += " Did hear that?";
+            //_context.Qoutes.Remove(samurai.Qoutes[3]);
+            _context.SaveChanges();
         }
 
         private static void FilteringWithRelatedData()
