@@ -6,6 +6,7 @@ namespace SamuraiApp.Domain
     {
         public Samurai()
         {
+            SecretIdentity = new SecretIdentity();
             Qoutes = new List<Qoute>();
         }
 
