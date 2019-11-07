@@ -39,7 +39,111 @@ namespace SomeUI
             //ProjectsWithQoutes();
             //FilteringWithRelatedData();
             //ModifyingRelatedDataWhenTracked();
-            ModifyingRelatedDataWhenNotTracked();
+            //ModifyingRelatedDataWhenNotTracked();
+            //PrepopulateSamuraisAndBattles();
+            //JoinBattleAndSamurai();
+            EnlistSamuraiIntoBattle();
+            //EnlistSamuraiIntoBattleUntracked();
+            //AddNewSamuraiViaDisconnectedBatlleObject();
+            //GetSamuraiWithBattles();
+            //RemoveJoinBetweenSamuraiAndBattleSimple();
+            //RemoveBattleFromSamurai();
+        }
+
+        private static void RemoveBattleFromSamurai()
+        {
+            //Goal: remove join between Katsushiro(Id=45) and Siege of Osaka (Id=5)
+            var samurai = _context.Samurais.Include(s => s.SamuraiBattles)
+                .ThenInclude(sb => sb.Battle)
+                .SingleOrDefault(s => s.Id == 42);
+            var sbToRemove = samurai.SamuraiBattles.SingleOrDefault(sb => sb.BattleId == 5);
+            samurai.SamuraiBattles.Remove(sbToRemove); //remove via List<T>
+            //_context.Remove(sbToRemove); //remove using dbContext
+            _context.ChangeTracker.DetectChanges(); //for debugging
+            _context.SaveChanges();
+        }
+
+        private static void RemoveJoinBetweenSamuraiAndBattleSimple()
+        {
+            var join = new SamuraiBattle { BattleId = 5, SamuraiId = 42 };
+            _context.Remove(join);
+            _context.SaveChanges();
+        }
+
+        private static void GetSamuraiWithBattles()
+        {
+            var samuraiWithBattles = _context.Samurais
+                .Include(s => s.SamuraiBattles)
+                .ThenInclude(sb => sb.Battle).FirstOrDefault(s => s.Id == 42);
+            var battle = samuraiWithBattles.SamuraiBattles.First().Battle;
+            var allTheBattles = new List<Battle>();
+            foreach(var samuraiBattle in samuraiWithBattles.SamuraiBattles)
+            {
+                allTheBattles.Add(samuraiBattle.Battle);
+            }
+        }
+
+        private static void AddNewSamuraiViaDisconnectedBatlleObject()
+        {
+            Battle battle;
+            using(var seperateOperation = new SamuraiContext())
+            {
+                battle = seperateOperation.Battles.Find(5);
+            }
+            var newSamurai = new Samurai { Name = "Sampsonsan" };
+            battle.SamuraiBattles.Add( new SamuraiBattle { Samurai = newSamurai });
+            _context.Attach(battle);
+            _context.SaveChanges();
+        }
+
+        private static void EnlistSamuraiIntoBattleUntracked()
+        {
+            Battle battle;
+            using(var seperateOperation = new SamuraiContext())
+            {
+                battle = seperateOperation.Battles.Find(5);
+            }
+            battle.SamuraiBattles.Add(new SamuraiBattle { SamuraiId = 42 });
+            _context.Attach(battle); //begin track entity
+            _context.ChangeTracker.DetectChanges(); //to show debug info
+            _context.SaveChanges();
+        }
+
+        private static void EnlistSamuraiIntoBattle()
+        {
+            var battle = _context.Battles.Find(5);
+            battle.SamuraiBattles
+                .Add(new SamuraiBattle { SamuraiId = 42 });
+            _context.SaveChanges();
+        }
+
+        private static void JoinBattleAndSamurai()
+        {
+            //Kikuchiyo is is 42, Siege of Osaka id is 5
+            var sbJoin = new SamuraiBattle { SamuraiId = 42, BattleId = 5 };
+            _context.Add(sbJoin);
+            _context.SaveChanges();
+        }
+
+        private static void PrepopulateSamuraisAndBattles()
+        {
+            _context.AddRange(
+                new Samurai { Name = "Kikuchiyo" },
+                new Samurai { Name = "Kambei Shimada" },
+                new Samurai { Name = "Shichiroji" },
+                new Samurai { Name = "Katsushiro Okamoto" },
+                new Samurai { Name = "Heihachi Hayashida" },
+                new Samurai { Name = "Kyuzo" },
+                new Samurai { Name = "Gorobei Katayama" }
+            );
+
+            _context.Battles.AddRange(
+                new Battle { Name = "Battle of Okehazama", StartDate = new DateTime(1560, 05, 1), EndDate = new DateTime(1560, 6, 15) },    
+                new Battle { Name = "Battle of Shiroyama", StartDate = new DateTime(1877, 9, 24), EndDate = new DateTime(1877, 9, 24) },    
+                new Battle { Name = "Siege of Osaka", StartDate = new DateTime(1614, 1, 1), EndDate = new DateTime(1615, 12, 31) },    
+                new Battle { Name = "Boshin War ", StartDate = new DateTime(1868, 1, 1), EndDate = new DateTime(1869, 1, 1) }
+            );
+            _context.SaveChanges();
         }
 
         private static void ModifyingRelatedDataWhenNotTracked()
