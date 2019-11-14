@@ -2,6 +2,8 @@
 using SamuraiApp.Domain;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Console;
+using System;
+using System.Linq;
 
 namespace SamuraiApp.Data
 {
@@ -30,6 +32,35 @@ namespace SamuraiApp.Data
         {
             modelBuilder.Entity<SamuraiBattle>()
                 .HasKey(s => new { s.SamuraiId, s.BattleId });
+            //modelBuilder.Entity<Samurai>().Property<DateTime>("Created");
+            //modelBuilder.Entity<Samurai>().Property<DateTime>("LastModified");
+            foreach(var entityType in modelBuilder.Model.GetEntityTypes())
+            {
+                modelBuilder.Entity(entityType.Name).Property<DateTime>("Created");
+                modelBuilder.Entity(entityType.Name).Property<DateTime>("LastModified");
+            }
+
+            modelBuilder.Entity<Samurai>().OwnsOne(s => s.BetterName).Property(b => b.GivenName).HasColumnName("GivenName");
+            modelBuilder.Entity<Samurai>().OwnsOne(s => s.BetterName).Property(b => b.SurName).HasColumnName("SurName");
+        }
+
+        public override int SaveChanges()
+        {
+            ChangeTracker.DetectChanges();
+            var timeStamp = DateTime.Now;
+
+            foreach(var entry in ChangeTracker.Entries()
+                .Where(e=>(e.State == EntityState.Added || e.State == EntityState.Modified)
+                            && !e.Metadata.IsOwned()))
+            {
+                entry.Property("LastModified").CurrentValue = timeStamp;
+
+                if(entry.State == EntityState.Added)
+                {
+                    entry.Property("Created").CurrentValue = timeStamp;
+                }
+            }
+            return base.SaveChanges();
         }
     }
 }

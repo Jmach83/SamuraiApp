@@ -11,9 +11,10 @@ using System;
 namespace SamuraiApp.Data.Migrations
 {
     [DbContext(typeof(SamuraiContext))]
-    partial class SamuraiContextModelSnapshot : ModelSnapshot
+    [Migration("20191108185134_shadowprops")]
+    partial class shadowprops
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -25,11 +26,7 @@ namespace SamuraiApp.Data.Migrations
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
 
-                    b.Property<DateTime>("Created");
-
                     b.Property<DateTime>("EndDate");
-
-                    b.Property<DateTime>("LastModified");
 
                     b.Property<string>("Name");
 
@@ -44,10 +41,6 @@ namespace SamuraiApp.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime>("LastModified");
 
                     b.Property<int>("SamuraiId");
 
@@ -84,10 +77,6 @@ namespace SamuraiApp.Data.Migrations
 
                     b.Property<int>("BattleId");
 
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime>("LastModified");
-
                     b.HasKey("SamuraiId", "BattleId");
 
                     b.HasIndex("BattleId");
@@ -99,10 +88,6 @@ namespace SamuraiApp.Data.Migrations
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd();
-
-                    b.Property<DateTime>("Created");
-
-                    b.Property<DateTime>("LastModified");
 
                     b.Property<string>("RealName");
 
@@ -122,27 +107,6 @@ namespace SamuraiApp.Data.Migrations
                         .WithMany("Qoutes")
                         .HasForeignKey("SamuraiId")
                         .OnDelete(DeleteBehavior.Cascade);
-                });
-
-            modelBuilder.Entity("SamuraiApp.Domain.Samurai", b =>
-                {
-                    b.OwnsOne("SamuraiApp.Domain.PersonFullName", "BetterName", b1 =>
-                        {
-                            b1.Property<int>("SamuraiId");
-
-                            b1.Property<string>("GivenName")
-                                .HasColumnName("GivenName");
-
-                            b1.Property<string>("SurName")
-                                .HasColumnName("SurName");
-
-                            b1.ToTable("Samurais");
-
-                            b1.HasOne("SamuraiApp.Domain.Samurai")
-                                .WithOne("BetterName")
-                                .HasForeignKey("SamuraiApp.Domain.PersonFullName", "SamuraiId")
-                                .OnDelete(DeleteBehavior.Cascade);
-                        });
                 });
 
             modelBuilder.Entity("SamuraiApp.Domain.SamuraiBattle", b =>

@@ -139,6 +139,22 @@
     <Compile Include="Migrations\20191026120921_relationships.designer.cs">
       <DependentUpon>20191026120921_relationships.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\20191108185134_shadowprops.cs" />
+    <Compile Include="Migrations\20191108185134_shadowprops.designer.cs">
+      <DependentUpon>20191108185134_shadowprops.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20191108214427_override-savechanges.cs" />
+    <Compile Include="Migrations\20191108214427_override-savechanges.designer.cs">
+      <DependentUpon>20191108214427_override-savechanges.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20191108214853_fix-modelbuilder-entity.cs" />
+    <Compile Include="Migrations\20191108214853_fix-modelbuilder-entity.designer.cs">
+      <DependentUpon>20191108214853_fix-modelbuilder-entity.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\20191114173010_BetterName.cs" />
+    <Compile Include="Migrations\20191114173010_BetterName.designer.cs">
+      <DependentUpon>20191114173010_BetterName.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\SamuraiContextModelSnapshot.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="SamuraiContext.cs" />

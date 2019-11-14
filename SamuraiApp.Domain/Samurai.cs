@@ -13,6 +13,7 @@ namespace SamuraiApp.Domain
 
         public int Id { get; set; }
         public string Name { get; set; }
+        public PersonFullName BetterName { get; set; }
         public List<Qoute> Qoutes { get; set; }
         public int BattleId { get; set; }
         public List<SamuraiBattle> SamuraiBattles { get; set; }

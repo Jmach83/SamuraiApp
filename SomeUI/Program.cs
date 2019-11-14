@@ -42,12 +42,140 @@ namespace SomeUI
             //ModifyingRelatedDataWhenNotTracked();
             //PrepopulateSamuraisAndBattles();
             //JoinBattleAndSamurai();
-            EnlistSamuraiIntoBattle();
+            //EnlistSamuraiIntoBattle();
             //EnlistSamuraiIntoBattleUntracked();
             //AddNewSamuraiViaDisconnectedBatlleObject();
             //GetSamuraiWithBattles();
             //RemoveJoinBetweenSamuraiAndBattleSimple();
             //RemoveBattleFromSamurai();
+            //AddSecretIdentityUsingSamuraiId();
+            //AddSecretIdentityToExistingSamurai();
+            //EditASecretIdentity();
+            //ReplaceASecretIdentity();
+            //ReplaceASecretIdentityNotTracked();
+            //ReplaceASecretIdentityNotInMemory();
+            //CreateSamurai();
+            //RetrieveSamuraiCreatedPastWeek();
+            //CreateThenEditSamuraiWithQoute();
+            //CreateSamuraiWithBetterName();
+            //GetAllSamurais();
+            RetrieveAndUpdateBetterName();
+
+        }
+
+        private static void RetrieveAndUpdateBetterName()
+        {
+            var samurai = _context.Samurais.FirstOrDefault(s => s.BetterName.GivenName == "Jack");
+            samurai.BetterName.GivenName = "Jill";
+            _context.SaveChanges();
+        }
+
+        private static void GetAllSamurais()
+        {
+            var allSamurais = _context.Samurais.ToList();
+        }
+
+        private static void CreateSamuraiWithBetterName()
+        {
+            var samurai = new Samurai
+            {
+                Name = "Jack le Black",
+                BetterName = new PersonFullName("Jack", "Black")
+            };
+
+            _context.Samurais.Add(samurai);
+            _context.SaveChanges();
+        }
+
+        private static void CreateThenEditSamuraiWithQoute()
+        {
+            var samurai = new Samurai { Name = "Ronin" };
+            var qoute = new Qoute { Text = "Aren't I MARVELous?" };
+            samurai.Qoutes.Add(qoute);
+            _context.Samurais.Add(samurai);
+            _context.SaveChanges();
+            qoute.Text += " See what I did there?";
+            _context.SaveChanges();
+        }
+
+        private static void RetrieveSamuraiCreatedPastWeek()
+        {
+            var oneWeekAgo = DateTime.Now.AddDays(-7);
+            //var newSamurais = _context.Samurais.Where(s => EF.Property<DateTime>(s, "Created") >= oneWeekAgo)
+                //.ToList();
+
+            var samuraisCreated = _context.Samurais
+                .Where(s => EF.Property<DateTime>(s, "Created") >= oneWeekAgo)
+                .Select(s => new { s.Id, s.Name, Created = EF.Property<DateTime>(s, "Created") }) //To get Created propety that is not part of Samurai Model
+                .ToList();
+        }
+
+        private static void CreateSamurai()
+        {
+            var samurai = new Samurai { Name = "Ronin" };
+            _context.Add(samurai);
+            //Done in samuraiContext now, savechange override
+            //var timestamp = DateTime.Now;
+            //_context.Entry(samurai).Property("Created").CurrentValue = timestamp;
+            //_context.Entry(samurai).Property("LastModified").CurrentValue = timestamp;
+            _context.SaveChanges();
+        }
+
+        private static void ReplaceASecretIdentityNotInMemory()
+        {
+            var samurai = _context.Samurais.FirstOrDefault(s => s.SecretIdentity != null);
+            samurai.SecretIdentity = new SecretIdentity { RealName = "Bobbie Draper" };
+            _context.SaveChanges();
+        }
+
+        private static void ReplaceASecretIdentityNotTracked()
+        {
+            Samurai samurai;
+            using(var seperateOperation = new SamuraiContext())
+            {
+                samurai = seperateOperation.Samurais.Include(s => s.SecretIdentity)
+                    .FirstOrDefault(s => s.Id == 42);
+            }
+            samurai.SecretIdentity = new SecretIdentity { RealName = "Sampson" };
+            _context.Attach(samurai);
+            _context.SaveChanges();
+
+        }
+
+        private static void ReplaceASecretIdentity()
+        {
+            var samurai = _context.Samurais.Include(s => s.SecretIdentity)
+                .FirstOrDefault(s => s.Id == 42);
+            samurai.SecretIdentity = new SecretIdentity { RealName = "Sampson" };
+            _context.SaveChanges();
+        }
+
+        private static void EditASecretIdentity()
+        {
+            var samurai = _context.Samurais.Include(s => s.SecretIdentity)
+                .FirstOrDefault(s => s.Id == 42);
+            samurai.SecretIdentity.RealName = "T'Challa";
+            _context.SaveChanges();
+        }
+
+        private static void AddSecretIdentityToExistingSamurai()
+        {
+            Samurai samurai;
+            using(var seperateOperation = new SamuraiContext())
+            {
+                samurai = seperateOperation.Samurais.Find(42);
+            }
+            samurai.SecretIdentity = new SecretIdentity { RealName = "Julia" };
+            _context.Attach(samurai);
+            _context.SaveChanges();
+        }
+
+        private static void AddSecretIdentityUsingSamuraiId()
+        {
+            //Note: Samurai 1 does not have a secret identity yet!
+            var identity = new SecretIdentity { SamuraiId = 42, };
+            _context.Add(identity);
+            _context.SaveChanges();
         }
 
         private static void RemoveBattleFromSamurai()
