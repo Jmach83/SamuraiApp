@@ -59,14 +59,38 @@ namespace SomeUI
             //CreateThenEditSamuraiWithQoute();
             //CreateSamuraiWithBetterName();
             //GetAllSamurais();
-            RetrieveAndUpdateBetterName();
+            //RetrieveAndUpdateBetterName();
+            //CreateAndFixUpNullBetterName();
+            ReplaceBetterName();
 
+        }
+
+        private static void ReplaceBetterName()
+        {
+            var samurai = _context.Samurais.FirstOrDefault(s => s.Name == "Chrisjen");
+            _context.Entry(samurai).Reference(s => s.BetterName).TargetEntry.State = EntityState.Detached;
+            samurai.BetterName = PersonFullName.Create("Shohreh", "Aghdashloo");
+            _context.Samurais.Update(samurai);
+            _context.SaveChanges();
+        }
+
+        private static void CreateAndFixUpNullBetterName()
+        {
+            _context.Samurais.Add(new Samurai { Name = "Chrisjen" });
+            _context.SaveChanges();
+            _context = new SamuraiContext();
+            var persistedSamurai = _context.Samurais.FirstOrDefault(s => s.Name == "Chrisjen");
+            if(persistedSamurai is null) { return;  }
+            if (persistedSamurai.BetterName.isEmpty())
+            {
+                persistedSamurai.BetterName = null;
+            }
         }
 
         private static void RetrieveAndUpdateBetterName()
         {
             var samurai = _context.Samurais.FirstOrDefault(s => s.BetterName.GivenName == "Jack");
-            samurai.BetterName.GivenName = "Jill";
+            //samurai.BetterName.GivenName = "Jill";
             _context.SaveChanges();
         }
 
@@ -80,7 +104,7 @@ namespace SomeUI
             var samurai = new Samurai
             {
                 Name = "Jack le Black",
-                BetterName = new PersonFullName("Jack", "Black")
+                BetterName = PersonFullName.Create("Jack", "Black")
             };
 
             _context.Samurais.Add(samurai);

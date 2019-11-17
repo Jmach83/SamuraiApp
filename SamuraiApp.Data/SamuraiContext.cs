@@ -59,6 +59,15 @@ namespace SamuraiApp.Data
                 {
                     entry.Property("Created").CurrentValue = timeStamp;
                 }
+
+                if(entry.Entity is Samurai)
+                {
+                    if(entry.Reference("BetterName").CurrentValue == null)
+                    {
+                        entry.Reference("BetterName").CurrentValue = PersonFullName.Empty();
+                    }
+                    entry.Reference("BetterName").TargetEntry.State = entry.State; //Tell EF to mark the BetterName state as the same as the Samurai, to ex. show its been updatet
+                }
             }
             return base.SaveChanges();
         }
